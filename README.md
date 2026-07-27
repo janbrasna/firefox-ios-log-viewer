@@ -1,9 +1,8 @@
 # Log Viewer
 
-A bespoke viewer for Firefox iOS device logs. It builds to a **single
-self-contained HTML file** you can open directly in any browser — no install,
-no server. The UI follows the GitHub design language and matches your system
-light/dark setting.
+A bespoke viewer for Firefox iOS device logs.
+
+To use the tool directly go here. [Log Viewer](https://mozilla-mobile.github.io/firefox-ios-log-viewer/)
 
 ## Features
 
