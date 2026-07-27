@@ -6,9 +6,10 @@ name: Build & Release
 on:
   workflow_dispatch:
 
-# Needed to create tags/releases with the built-in GITHUB_TOKEN.
 permissions:
-  contents: write
+  contents: write # Needed to create tags/releases
+  pages: write
+  id-token: write # Needed to configure deployment
 
 # Never run two releases at once — they would race on the version number.
 concurrency:
@@ -83,3 +84,23 @@ jobs:
             --target "$GITHUB_SHA" \
             --generate-notes \
             "$ASSET"
+
+      - name: Configure deployment
+        uses: actions/configure-pages@v6
+
+      - name: Expose dist for deployment
+        uses: actions/upload-pages-artifact@v5
+        with:
+          path: dist
+
+  deploy:
+    needs: release
+    runs-on: ubuntu-latest
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v5
