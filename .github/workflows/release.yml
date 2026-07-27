@@ -3,7 +3,10 @@ name: Build & Release
 # Manually triggered. Each run computes the next version (minor bump), builds
 # the self-contained single-file HTML app, and publishes a GitHub Release with
 # the HTML attached as a download.
-on:
+on:  
+  push:
+    branches:
+      - 'main'
   workflow_dispatch:
 
 permissions:
