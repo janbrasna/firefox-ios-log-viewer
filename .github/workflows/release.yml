@@ -1,8 +1,8 @@
 name: Build & Release
+run-name: Release triggered from ${{ github.sha }}
 
-# Manually triggered. Each run computes the next version (minor bump), builds
-# the self-contained single-file HTML app, and publishes a GitHub Release with
-# the HTML attached as a download.
+# Computes the next version (minor bump), builds the self-contained single-file HTML app,
+# publishes a GitHub Release with the HTML artifact and deploys the app to GitHub Pages.
 on:  
   push:
     branches:
@@ -14,18 +14,19 @@ permissions:
   pages: write
   id-token: write # Needed to configure deployment
 
-# Never run two releases at once — they would race on the version number.
 concurrency:
   group: release
-  cancel-in-progress: false
+  cancel-in-progress: false # Always queue after previous release runs for correct versioning
 
 jobs:
   release:
-    runs-on: ubuntu-latest # pure web build — no macOS/Rust needed
+    runs-on: ubuntu-slim
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
+        with:
+          persist-credentials: false
 
       - name: Compute next version
         id: version
@@ -53,9 +54,9 @@ jobs:
           echo "tag=v$next" >> "$GITHUB_OUTPUT"
 
       - name: Setup Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
-          node-version: 22
+          node-version: 24
           cache: npm
 
       - name: Install dependencies
@@ -98,7 +99,7 @@ jobs:
 
   deploy:
     needs: release
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-slim
 
     environment:
       name: github-pages
